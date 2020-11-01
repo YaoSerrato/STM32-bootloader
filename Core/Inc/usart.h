@@ -34,6 +34,11 @@ extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
+#define		BL_DEBUG_MSG_EN				(1)
+#define		BL_DEBUG_MSG_MAXLEN			(80)
+
+#define		DEBUG_USART_HANDLE			(&huart3)
+#define		BL_USART_HANDLE				(&huart2)
 
 /* USER CODE END Private defines */
 

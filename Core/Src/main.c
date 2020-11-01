@@ -25,6 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdarg.h>
 
 /* USER CODE END Includes */
 
@@ -51,6 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void printmsg(char *format,...);
 
 /* USER CODE END PFP */
 
@@ -101,6 +103,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	printmsg("Hello bootloader! %d\r\n", 78);
+	HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -161,7 +165,23 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief Print of formatted string to console over UART.
+  * @retval None
+  */
+void printmsg(char *format,...)
+{
+#if defined(BL_DEBUG_MSG_EN) && (BL_DEBUG_MSG_EN == 1)
+	unsigned char str[BL_DEBUG_MSG_MAXLEN] = {0};
 
+	/* Extract the argument list using the VA APIs */
+	va_list args;
+	va_start(args, format);
+	vsprintf(str, format, args);
+	HAL_UART_Transmit(DEBUG_USART_HANDLE, (uint8_t*) str, sizeof(str), 1);
+	va_end(args);
+#endif
+}
 /* USER CODE END 4 */
 
 /**
