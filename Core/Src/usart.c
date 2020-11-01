@@ -108,8 +108,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
     /**USART3 GPIO Configuration
-    PC4     ------> USART3_TX
-    PC5     ------> USART3_RX
+    PC10     ------> USART3_TX
+    PC11     ------> USART3_RX
     */
     GPIO_InitStruct.Pin = USART3_TX_Pin|USART3_RX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -154,8 +154,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     __HAL_RCC_USART3_CLK_DISABLE();
 
     /**USART3 GPIO Configuration
-    PC4     ------> USART3_TX
-    PC5     ------> USART3_RX
+    PC10     ------> USART3_TX
+    PC11     ------> USART3_RX
     */
     HAL_GPIO_DeInit(GPIOC, USART3_TX_Pin|USART3_RX_Pin);
 
