@@ -52,7 +52,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void printmsg(char *format,...);
 
 /* USER CODE END PFP */
 
@@ -98,13 +97,26 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  /* Branch to application or stay in bootloader based on User Button state at restart */
+  if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET)
+  {
+	  /* Button pressed, stay in bootloader */
+	  printmsg("\n\rBL_DEBUG_MSG: Button is pressed staying in Bootloader.");
+	  BL_Loop();
+  }
+  else
+  {
+	  /* Button not pressed, jumpt to application */
+	  printmsg("\n\rBL_DEBUG_MSG: Button is not pressed jumping to application.");
+	  BL_BootApplication();
+  }
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	printmsg("Hello bootloader! %d\r\n", 78);
-	HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -178,10 +190,44 @@ void printmsg(char *format,...)
 	va_list args;
 	va_start(args, format);
 	vsprintf(str, format, args);
-	HAL_UART_Transmit(DEBUG_USART_HANDLE, (uint8_t*) str, sizeof(str), 1);
+	HAL_UART_Transmit(BL_USART_HANDLE, (uint8_t*) str, sizeof(str), HAL_MAX_DELAY);
 	va_end(args);
 #endif
 }
+
+/**
+  * @brief Main bootloader loop waiting for a host start message.
+  * @retval None
+  */
+void BL_Loop(void)
+{
+
+}
+
+/**
+  * @brief Function for jumping to application.
+  * @retval None
+  */
+void BL_BootApplication(void)
+{
+	/* A function pointer to hold the address of the Reset Handler of user application */
+	void (*app_reset_handler)(void);
+	//printmsg("\n\rBL_DEBUG_MSG: BL_BootApplication.");
+
+	/* Configuration of the MSP by reading the value from the user application base address */
+	uint32_t msp_value = *((volatile uint32_t*) FLASH_BASE_ADDRESS_APPLICATION);
+	__set_MSP(msp_value);
+	//printmsg("\n\rBL_DEBUG_MSG: MSP value 0x%#x at address 0x%#x.", msp_value, FLASH_BASE_ADDRESS_APPLICATION);
+
+	/* Storing the user application Reset Handler memory address */
+	uint32_t addr_reset_handler = *((volatile uint32_t*) (FLASH_BASE_ADDRESS_APPLICATION + 4));
+	app_reset_handler = (void*) addr_reset_handler;
+	//printmsg("\n\rBL_DEBUG_MSG: App Reset handler value 0x%#x at address 0x%#x.", addr_reset_handler, (FLASH_BASE_ADDRESS_APPLICATION + 4));
+
+	/* Jumping to Reset Handler of user application */
+	app_reset_handler();
+}
+
 /* USER CODE END 4 */
 
 /**
