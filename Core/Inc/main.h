@@ -53,12 +53,10 @@ extern "C" {
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
+/* USER CODE BEGIN EFP */
 void printmsg(char *format,...);
 
-void BL_Loop(void);
 void BL_BootApplication(void);
-
-/* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
 
@@ -81,9 +79,8 @@ void BL_BootApplication(void);
 #define USART3_RX_GPIO_Port GPIOC
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
-
-#define	FLASH_BASE_ADDRESS_APPLICATION		(0x08008000u)
 /* USER CODE BEGIN Private defines */
+#define	FLASH_BASE_ADDRESS_APPLICATION		(0x08008000u)
 
 /* USER CODE END Private defines */
 

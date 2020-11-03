@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdarg.h>
+#include "Bootloader_driver.h"
 
 /* USER CODE END Includes */
 
@@ -46,6 +47,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t RX_Buffer[MAX_BUFFER_SIZE] = {0};
+uint8_t RX_char = 0;
 
 /* USER CODE END PV */
 
@@ -92,6 +95,7 @@ int main(void)
   MX_CRC_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_UART_Receive_IT(&huart2, &RX_char, 1);
 
   /* USER CODE END 2 */
 
@@ -103,13 +107,12 @@ int main(void)
   {
 	  /* Button pressed, stay in bootloader */
 	  printmsg("\n\rBL_DEBUG_MSG: Button is pressed staying in Bootloader.");
-	  BL_Loop();
   }
   else
   {
 	  /* Button not pressed, jumpt to application */
-	  printmsg("\n\rBL_DEBUG_MSG: Button is not pressed jumping to application.");
-	  BL_BootApplication();
+	  //printmsg("\n\rBL_DEBUG_MSG: Button is not pressed jumping to application.");
+	  //BL_BootApplication();
   }
 
   while (1)
@@ -195,14 +198,6 @@ void printmsg(char *format,...)
 #endif
 }
 
-/**
-  * @brief Main bootloader loop waiting for a host start message.
-  * @retval None
-  */
-void BL_Loop(void)
-{
-
-}
 
 /**
   * @brief Function for jumping to application.
@@ -226,6 +221,64 @@ void BL_BootApplication(void)
 
 	/* Jumping to Reset Handler of user application */
 	app_reset_handler();
+}
+
+/**
+  * @brief USART Receive callback.
+  * @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	uint8_t char_input = 0;
+	static uint8_t index = 0;
+	static uint8_t flag_header = 1;
+
+	/* Reading received byte */
+	char_input = RX_char;
+
+	/* Parsing packet */
+	if(flag_header)
+	{
+		if((char_input == BL_CMD_PACKET_START) && (index == BL_CMDIDX_PACKET_START))
+		{
+			/* Start of packet header */
+			RX_Buffer[BL_CMDIDX_PACKET_START] = char_input;
+			index++;
+		}
+		else
+		{
+			/* Rest of packet header */
+			RX_Buffer[index] = char_input;
+			if(index == BL_CMDIDX_CMDCODE)
+			{
+				flag_header = 0;
+			}
+			index++;
+		}
+	}
+	else
+	{
+		/* Receiving packet body */
+		if( index < (RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE) )
+		{
+			RX_Buffer[index] = char_input;
+			index++;
+		}
+	}
+
+	/* Packet received complete, restarting index count for receiving next packet */
+	if( index >= (RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE) )
+	{
+		flag_header = 1;
+		index = 0;
+
+		/* Here I must check the CRC value. If success, send ACK and process the packet; if failure, send NACK */
+		/* Here you must call the function for processing the packet just received (in case the CRC is success) */
+	}
+
+
+	/* Enabling UART receive in interrupt mode again */
+	HAL_UART_Receive_IT(&huart2, &RX_char, 1);
 }
 
 /* USER CODE END 4 */
