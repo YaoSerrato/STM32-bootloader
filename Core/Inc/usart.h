@@ -40,8 +40,6 @@ extern UART_HandleTypeDef huart3;
 #define		DEBUG_USART_HANDLE			(&huart3)
 #define		BL_USART_HANDLE				(&huart2)
 
-#define		MAX_BUFFER_SIZE				(300)
-
 /* USER CODE END Private defines */
 
 void MX_USART2_UART_Init(void);

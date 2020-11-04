@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t RX_Buffer[MAX_BUFFER_SIZE] = {0};
+uint8_t RX_Buffer[BL_MAX_BUFFER_SIZE] = {0};
 uint8_t RX_char = 0;
 
 /* USER CODE END PV */
@@ -230,6 +230,7 @@ void BL_BootApplication(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	uint8_t char_input = 0;
+	uint16_t total_size = RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE;
 	static uint8_t index = 0;
 	static uint8_t flag_header = 1;
 
@@ -259,7 +260,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	else
 	{
 		/* Receiving packet body */
-		if( index < (RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE) )
+		if(index < total_size)
 		{
 			RX_Buffer[index] = char_input;
 			index++;
@@ -267,13 +268,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 
 	/* Packet received complete, restarting index count for receiving next packet */
-	if( index >= (RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE) )
+	if(index >= total_size)
 	{
 		flag_header = 1;
 		index = 0;
 
-		/* Here I must check the CRC value. If success, send ACK and process the packet; if failure, send NACK */
-		/* Here you must call the function for processing the packet just received (in case the CRC is success) */
+		/* Here you must call the Bootloader commands function handler */
+		/* TODO: do not pass as argument the pointer to global variable. If another interrupt occurs while processing
+		 * a previously received packet, the interrupt will modify the RX_Buffer contents and the ongoing command processing
+		 * will be corrupted.
+		 * Solution: disable USART2 global interrupt before entering BL_Process_Command()? And re-enable it after exiting
+		 * BL_Process_Command()? Can I disable an interrupt from its Callback handler, will this break something?
+		 * TODO: implement a buffer/FIFO or something so that I do not pass as argument a pointer to global variable RX_Buffer,
+		 * but instead I maintain in a buffer every packet being received.
+		 */
+		//__disable_interrupt();
+		BL_Process_Command(RX_Buffer, total_size);
+		//__enable_interrupt();
 	}
 
 
