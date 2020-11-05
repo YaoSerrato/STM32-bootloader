@@ -17,9 +17,11 @@
 /* Bootloader commands */
 /* Index positions common to all commands */
 #define		BL_CMDIDX_PACKET_START			(0)
-#define		BL_CMDIDX_LENGTH				(1)
+#define		BL_CMDIDX_PAYLOAD_LENGTH		(1)
 #define		BL_CMDIDX_CMDCODE				(2)
-#define		BL_MAX_BUFFER_SIZE				(300)
+#define		BL_CMDIDX_PAYLOAD_START			(3)
+
+#define		BL_MAX_PACKET_SIZE				(258)
 
 #define		BL_CMD_PACKET_HEADER_SIZE		(3)
 #define		BL_CMD_PACKET_START				(0x81)
@@ -40,8 +42,19 @@
 
 
 /* Function declarations */
-void	BL_Process_Command(uint8_t* Pkt, uint16_t Size);
-//void 	BL_process_BL_GET_VER(void);
+void	BL_Process_Command(uint8_t* Pkt);
+void	BL_process_BL_GET_VER(uint8_t* payload, uint8_t payload_size);
+void	BL_process_BL_GET_HELP(void);
+void	BL_process_BL_GET_CID(void);
+void	BL_process_BL_GET_RDP_STATUS(void);
+void	BL_process_BL_GO_TO_ADDR(void);
+void	BL_process_BL_FLASH_ERASE(void);
+void	BL_process_BL_MEM_WRITE(void);
+void	BL_process_BL_EN_R_W_PROTECT(void);
+void	BL_process_BL_MEM_READ(void);
+void	BL_process_BL_READ_SECTOR_STATUS(void);
+void	BL_process_BL_OTP_READ(void);
+void	BL_process_BL_DIS_R_W_PROTECT(void);
 
 
 #ifdef __cplusplus

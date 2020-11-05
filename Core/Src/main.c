@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t RX_Buffer[BL_MAX_BUFFER_SIZE] = {0};
+uint8_t RX_Buffer[BL_MAX_PACKET_SIZE] = {0};
 uint8_t RX_char = 0;
 
 /* USER CODE END PV */
@@ -230,7 +230,7 @@ void BL_BootApplication(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	uint8_t char_input = 0;
-	uint16_t total_size = RX_Buffer[BL_CMDIDX_LENGTH] + BL_CMD_PACKET_HEADER_SIZE;
+	uint16_t total_size = RX_Buffer[BL_CMDIDX_PAYLOAD_LENGTH] + BL_CMD_PACKET_HEADER_SIZE;
 	static uint8_t index = 0;
 	static uint8_t flag_header = 1;
 
@@ -268,7 +268,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 
 	/* Packet received complete, restarting index count for receiving next packet */
-	if(index >= total_size)
+	if(index == total_size)
 	{
 		flag_header = 1;
 		index = 0;
@@ -283,7 +283,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		 * but instead I maintain in a buffer every packet being received.
 		 */
 		//__disable_interrupt();
-		BL_Process_Command(RX_Buffer, total_size);
+		BL_Process_Command(RX_Buffer);
 		//__enable_interrupt();
 	}
 
