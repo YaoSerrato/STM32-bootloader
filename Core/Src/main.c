@@ -26,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdarg.h>
-#include "Bootloader_driver.h"
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -187,7 +187,7 @@ void SystemClock_Config(void)
 void printmsg(char *format,...)
 {
 #if defined(BL_DEBUG_MSG_EN) && (BL_DEBUG_MSG_EN == 1)
-	unsigned char str[BL_DEBUG_MSG_MAXLEN] = {0};
+	char str[BL_DEBUG_MSG_MAXLEN] = {0};
 
 	/* Extract the argument list using the VA APIs */
 	va_list args;
@@ -281,6 +281,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		 * BL_Process_Command()? Can I disable an interrupt from its Callback handler, will this break something?
 		 * TODO: implement a buffer/FIFO or something so that I do not pass as argument a pointer to global variable RX_Buffer,
 		 * but instead I maintain in a buffer every packet being received.
+		 * TODO: this callback must be kept AS SHORT AS POSSIBLE. This means that I have to append the received packets to a buffer
+		 * and exit quickly this callback.
 		 */
 		//__disable_interrupt();
 		BL_Process_Command(RX_Buffer);
