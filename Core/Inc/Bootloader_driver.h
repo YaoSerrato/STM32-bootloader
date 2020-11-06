@@ -14,17 +14,26 @@
 /* Includes */
 #include <stdint.h>
 
+ /* Bootloader version */
+#define		BL_VERSION						(1)
+
 /* Bootloader commands */
-/* Index positions common to all commands */
+/* Index definitions por commands and replays */
 #define		BL_CMDIDX_PACKET_START			(0)
 #define		BL_CMDIDX_PAYLOAD_LENGTH		(1)
 #define		BL_CMDIDX_CMDCODE				(2)
 #define		BL_CMDIDX_PAYLOAD_START			(3)
-
 #define		BL_MAX_PACKET_SIZE				(258)
-
 #define		BL_CMD_PACKET_HEADER_SIZE		(3)
 #define		BL_CMD_PACKET_START				(0x81)
+
+#define		BL_RPLIDX_PACKET_START			(0)
+#define		BL_RPLIDX_PAYLOAD_LENGTH		(1)
+#define		BL_RPLIDX_PAYLOAD_START			(2)
+#define		BL_RPL_PACKET_START				(0x97)
+
+#define		BL_ACK							(0xDC)
+#define		BL_NACK							(0xFE)
 
 /* Commands */
 #define		BL_GET_VER						(0x51)
@@ -56,6 +65,8 @@ void	BL_process_BL_READ_SECTOR_STATUS(void);
 void	BL_process_BL_OTP_READ(void);
 void	BL_process_BL_DIS_R_W_PROTECT(void);
 
+uint8_t BL_get_bootloader_version(void);
+uint8_t BL_send_replay(void);
 
 #ifdef __cplusplus
 }

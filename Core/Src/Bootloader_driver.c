@@ -19,7 +19,7 @@ void BL_Process_Command(uint8_t* Pkt)
 	uint8_t* payload = &Pkt[BL_CMDIDX_PAYLOAD_START];
 	uint8_t payload_size = Pkt[BL_CMDIDX_PAYLOAD_LENGTH];
 
-	/* Here I must check the CRC value. If success, send ACK and process the packet; if failure, send NACK */
+	/* Here I must check the CRC value. If success, send ACK and process the packet; if failure, send NACK and exit function */
 
 
 	/* Checking for a correct packet header */

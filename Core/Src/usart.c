@@ -171,7 +171,35 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief Function for sending an acknowledge code to host.
+  * @retval None
+  */
+void	BL_SendACK(void)
+{
+	uint8_t buf[3];
 
+	buf[BL_RPLIDX_PACKET_START] = BL_RPL_PACKET_START;
+	buf[BL_RPLIDX_PAYLOAD_LENGTH] = 1;
+	buf[BL_RPLIDX_PAYLOAD_START] = BL_ACK;
+
+	HAL_UART_Transmit(&huart2, buf, 3, HAL_MAX_DELAY);
+}
+
+/**
+  * @brief Function for sending a non-acknowledge code to host.
+  * @retval None
+  */
+void	BL_SendNACK(void)
+{
+	uint8_t buf[3];
+
+	buf[BL_RPLIDX_PACKET_START] = BL_RPL_PACKET_START;
+	buf[BL_RPLIDX_PAYLOAD_LENGTH] = 1;
+	buf[BL_RPLIDX_PAYLOAD_START] = BL_NACK;
+
+	HAL_UART_Transmit(&huart2, buf, 3, HAL_MAX_DELAY);
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
