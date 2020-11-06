@@ -33,13 +33,18 @@
 extern CRC_HandleTypeDef hcrc;
 
 /* USER CODE BEGIN Private defines */
+typedef enum
+{
+	VERIFY_CRC_FAIL = 0,
+	VERIFY_CRC_SUCCESS = 1
+}CRC_VERIFY_STATUS;
 
 /* USER CODE END Private defines */
 
 void MX_CRC_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+CRC_VERIFY_STATUS BL_verify_crc(uint8_t *pData, uint32_t len, uint32_t crc_host);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

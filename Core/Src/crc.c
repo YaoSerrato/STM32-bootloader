@@ -76,7 +76,24 @@ void HAL_CRC_MspDeInit(CRC_HandleTypeDef* crcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+CRC_VERIFY_STATUS BL_verify_crc(uint8_t *pData, uint32_t len, uint32_t crc_host)
+{
+	uint32_t uwCRCvalue = 0xFF;
+	uint32_t i_data = 0;
 
+	for(uint32_t i = 0; i < len; ++i)
+	{
+		i_data = (uint32_t)pData[i];
+		uwCRCvalue = HAL_CRC_Accumulate(&hcrc, &i_data, 1);
+	}
+
+	if(uwCRCvalue == crc_host)
+	{
+		return VERIFY_CRC_SUCCESS;
+	}
+
+	return VERIFY_CRC_FAIL;
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -35,6 +35,8 @@
 #define		BL_ACK							(0xDC)
 #define		BL_NACK							(0xFE)
 
+#define		BL_CRC_LENGTH					(4)
+
 /* Commands */
 #define		BL_GET_VER						(0x51)
 #define		BL_GET_HELP						(0x52)
@@ -67,6 +69,7 @@ void	BL_process_BL_DIS_R_W_PROTECT(void);
 
 uint8_t BL_get_bootloader_version(void);
 uint8_t BL_send_replay(void);
+uint32_t BL_extract_crc(uint8_t* pData, uint8_t len);
 
 #ifdef __cplusplus
 }
