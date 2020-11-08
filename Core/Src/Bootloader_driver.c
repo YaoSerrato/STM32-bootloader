@@ -51,7 +51,7 @@ void BL_Process_Command(uint8_t* Pkt)
 	switch(Pkt[BL_CMDIDX_CMDCODE])
 	{
 		case BL_GET_VER:
-			BL_process_BL_GET_VER(payload, payload_size_no_crc);
+			BL_process_BL_GET_VER();
 			break;
 
 		case BL_GET_HELP:
@@ -99,9 +99,24 @@ void BL_Process_Command(uint8_t* Pkt)
   * @brief Bootloader commands handler.
   * @retval None
   */
-void 	BL_process_BL_GET_VER(uint8_t* payload, uint8_t payload_size)
+void 	BL_process_BL_GET_VER(void)
 {
+	uint8_t buf[9] = {0};
 
+	/* Packet header */
+	buf[BL_RPLIDX_PACKET_START] = BL_RPL_PACKET_START;
+	buf[BL_RPLIDX_PAYLOAD_LENGTH] = 7;
+
+	/* Packet payload */
+	buf[2] = BL_MAJOR_VERSION;
+	buf[3] = BL_MINOR_VERSION;
+	buf[4] = BL_PATCH_VERSION;
+
+	/* Packet CRC (fills last 4 bytes of buffer with CRC value) */
+	BL_append_crc(buf, 5);
+
+	/* Send packet */
+	BL_send_replay(buf, 9);
 }
 
 /**
@@ -203,15 +218,4 @@ void	BL_process_BL_DIS_R_W_PROTECT(void)
 
 }
 
-uint32_t BL_extract_crc(uint8_t* pData, uint8_t len)
-{
-	uint32_t crc_1 = (uint32_t)pData[len];
-	uint32_t crc_2 = (uint32_t)pData[len + 1];
-	uint32_t crc_3 = (uint32_t)pData[len + 2];
-	uint32_t crc_4 = (uint32_t)pData[len + 3];
-
-	uint32_t temp_crc = ( (crc_1 << 24) | (crc_2 << 16) | (crc_3 << 8) | (crc_4 << 0) );
-
-	return temp_crc;
-}
 

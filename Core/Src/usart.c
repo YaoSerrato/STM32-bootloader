@@ -171,6 +171,12 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+/* TODO: Implement a transport layer. This transport layer will be the link between application and send/receive features.
+ * With this transport layer you will be make this Secure Bootloader portable to other devices because the layer will link
+ * the data to send with a peripheral (SPI, I2C, USART).
+ * */
+
 /**
   * @brief Function for sending an acknowledge code to host.
   * @retval None
@@ -200,6 +206,16 @@ void	BL_SendNACK(void)
 
 	HAL_UART_Transmit(&huart2, buf, 3, HAL_MAX_DELAY);
 }
+
+/**
+  * @brief Function for sending a non-acknowledge code to host.
+  * @retval None
+  */
+void	BL_send_replay(uint8_t* pData, uint16_t len)
+{
+	HAL_UART_Transmit(&huart2, pData, len, HAL_MAX_DELAY);
+}
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

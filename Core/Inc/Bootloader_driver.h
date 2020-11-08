@@ -14,8 +14,10 @@
 /* Includes */
 #include <stdint.h>
 
- /* Bootloader version */
-#define		BL_VERSION						(1)
+ /* Bootloader SemVer */
+#define		BL_MAJOR_VERSION				(0x01)
+#define		BL_MINOR_VERSION				(0x00)
+#define		BL_PATCH_VERSION				(0x00)
 
 /* Bootloader commands */
 /* Index definitions por commands and replays */
@@ -54,7 +56,7 @@
 
 /* Function declarations */
 void	BL_Process_Command(uint8_t* Pkt);
-void	BL_process_BL_GET_VER(uint8_t* payload, uint8_t payload_size);
+void	BL_process_BL_GET_VER(void);
 void	BL_process_BL_GET_HELP(void);
 void	BL_process_BL_GET_CID(void);
 void	BL_process_BL_GET_RDP_STATUS(void);
@@ -67,9 +69,6 @@ void	BL_process_BL_READ_SECTOR_STATUS(void);
 void	BL_process_BL_OTP_READ(void);
 void	BL_process_BL_DIS_R_W_PROTECT(void);
 
-uint8_t BL_get_bootloader_version(void);
-uint8_t BL_send_replay(void);
-uint32_t BL_extract_crc(uint8_t* pData, uint8_t len);
 
 #ifdef __cplusplus
 }

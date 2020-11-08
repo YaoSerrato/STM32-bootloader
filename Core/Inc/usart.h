@@ -46,8 +46,11 @@ void MX_USART2_UART_Init(void);
 void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
 void	BL_SendACK(void);
 void	BL_SendNACK(void);
+void	BL_send_replay(uint8_t* pData, uint16_t len);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
